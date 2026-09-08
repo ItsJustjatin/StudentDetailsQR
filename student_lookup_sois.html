@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F2;
+    --navy:#1C2B45;
+    --navy-soft:#2B3E60;
+    --gold:#B08D3E;
+    --gold-soft:#E4D6AE;
+    --slate:#5A6270;
+    --hairline:#D9D2BF;
+    --error:#A23B2E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(176,141,62,0.10), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(28,43,69,0.08), transparent 45%),
+      var(--paper);
+    font-family:'Inter', sans-serif;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 16px;
+  }
+  .wrap{ width:100%; max-width:460px; }
+
+  .masthead{ text-align:center; margin-bottom:22px; }
+  .masthead .mark{
+    width:46px; height:46px; margin:0 auto 14px;
+    border:1.5px solid var(--navy);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Source Serif 4', serif;
+    font-weight:600; font-size:18px;
+    color:var(--navy);
+  }
+  .masthead h1{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:26px;
+    line-height:1.25;
+    margin:0 0 6px;
+    letter-spacing:0.2px;
+  }
+  .masthead p{
+    margin:0; font-size:14px; color:var(--slate);
+  }
+
+  .ticket{
+    background:#fff;
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    box-shadow:0 18px 40px -22px rgba(28,43,69,0.35);
+    overflow:hidden;
+  }
+
+  .panel{ padding:26px 26px 24px; }
+
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--slate);
+    margin-bottom:8px;
+  }
+  .input-row{ display:flex; gap:10px; }
+  input[type="text"]{
+    flex:1;
+    width:100%;
+    padding:13px 14px;
+    font-size:15.5px;
+    font-family:'Inter', sans-serif;
+    border:1.5px solid var(--hairline);
+    border-radius:9px;
+    background:var(--paper);
+    color:var(--navy);
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input[type="text"]:focus{ border-color:var(--navy); }
+  input[type="text"]::placeholder{ color:#A8A196; }
+
+  button{
+    margin-top:14px;
+    width:100%;
+    padding:13px 14px;
+    font-size:15px;
+    font-weight:600;
+    font-family:'Inter', sans-serif;
+    letter-spacing:0.2px;
+    color:#fff;
+    background:var(--navy);
+    border:none;
+    border-radius:9px;
+    cursor:pointer;
+    transition:background .15s ease, transform .05s ease;
+  }
+  button:hover{ background:var(--navy-soft); }
+  button:active{ transform:translateY(1px); }
+
+  .hint{
+    margin-top:10px;
+    font-size:12.5px;
+    color:var(--slate);
+  }
+
+  .error-msg{
+    display:none;
+    margin-top:14px;
+    padding:11px 13px;
+    background:#F7EDEA;
+    border:1px solid #E3C6BE;
+    color:var(--error);
+    font-size:13.5px;
+    border-radius:8px;
+  }
+
+  /* perforated divider */
+  .tear{
+    position:relative;
+    height:0;
+    border-top:1.5px dashed var(--hairline);
+    margin:0 0;
+  }
+  .tear::before, .tear::after{
+    content:"";
+    position:absolute;
+    top:-11px;
+    width:22px; height:22px;
+    background:var(--paper);
+    border-radius:50%;
+  }
+  .tear::before{ left:-11px; }
+  .tear::after{ right:-11px; }
+
+  .result{
+    display:none;
+    padding:24px 26px 26px;
+  }
+  .result.visible{ display:block; }
+  .panel.hidden-after{ display:none; }
+
+  .result-name{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:22px;
+    margin:0 0 3px;
+  }
+  .result-sub{
+    font-size:13px;
+    color:var(--gold);
+    font-weight:600;
+    letter-spacing:0.3px;
+    margin:0 0 20px;
+  }
+
+  .field-row{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    padding:11px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  .field-row:last-child{ border-bottom:none; }
+  .field-label{
+    font-size:12.5px;
+    color:var(--slate);
+    font-weight:600;
+    flex:0 0 40%;
+    padding-top:1px;
+  }
+  .field-value{
+    font-size:14.5px;
+    color:var(--navy);
+    text-align:right;
+    flex:1;
+    word-break:break-word;
+  }
+
+  .room-highlight{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+  }
+
+  .whatsapp-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    margin-top:16px;
+    width:100%;
+    padding:13px 14px;
+    font-size:15px;
+    font-weight:600;
+    font-family:'Inter', sans-serif;
+    letter-spacing:0.2px;
+    color:#fff;
+    background:#25D366;
+    border:none;
+    border-radius:9px;
+    text-decoration:none;
+    transition:background .15s ease, transform .05s ease;
+  }
+  .whatsapp-btn:hover{ background:#1FBE5A; }
+  .whatsapp-btn:active{ transform:translateY(1px); }
+  .whatsapp-btn svg{ flex-shrink:0; }
+  .room-box{
+    flex:1;
+    background:var(--navy);
+    color:#fff;
+    border-radius:10px;
+    padding:14px 16px;
+    text-align:center;
+  }
+  .room-box .label{
+    font-size:11px;
+    letter-spacing:0.4px;
+    color:var(--gold-soft);
+    font-weight:600;
+    margin-bottom:5px;
+  }
+  .room-box .value{
+    font-family:'Source Serif 4', serif;
+    font-size:19px;
+    font-weight:600;
+  }
+
+  .new-search{
+    margin-top:20px;
+    width:100%;
+    background:transparent;
+    color:var(--navy);
+    border:1.5px solid var(--hairline);
+  }
+  .new-search:hover{ background:var(--paper); }
+
+  footer{
+    text-align:center;
+    margin-top:18px;
+    font-size:11.5px;
+    color:#A8A196;
+  }
+  footer strong{
+    color:var(--gold);
+    font-weight:600;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <div class="mark">S</div>
+      <h1>Find your details</h1>
+      <p>Enter your application number below</p>
+    </div>
+
+    <div class="ticket">
+      <div class="panel" id="formPanel">
+        <label for="regInput">Application number</label>
+        <div class="input-row">
+          <input type="text" id="regInput" placeholder="e.g. PU/MCA/26/151250" autocomplete="off" autocapitalize="characters">
+        </div>
+        <button id="submitBtn">Show my details</button>
+        <p class="hint">This is the application number from your admission letter.</p>
+        <div class="error-msg" id="errorMsg">We couldn't find that registration number. Double-check it and try again.</div>
+      </div>
+
+      <div class="tear" id="tearDivider" style="display:none;"></div>
+
+      <div class="result" id="resultPanel">
+        <p class="result-name" id="rName"></p>
+        <p class="result-sub" id="rProgram"></p>
+
+        <div class="field-row"><div class="field-label">Course</div><div class="field-value" id="rCourse"></div></div>
+        <div class="field-row"><div class="field-label">Program</div><div class="field-value" id="rProgramFull"></div></div>
+        <div class="field-row"><div class="field-label">School</div><div class="field-value" id="rSchool"></div></div>
+
+        <div class="room-highlight">
+          <div class="room-box">
+            <div class="label">SECTION</div>
+            <div class="value" id="rSection"></div>
+          </div>
+          <div class="room-box">
+            <div class="label">CLASSROOM</div>
+            <div class="value" id="rRoom"></div>
+          </div>
+        </div>
+
+        <a class="whatsapp-btn" id="rWhatsapp" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 5L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.82 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m-4.52 4.7c-.16 0-.42.06-.64.31-.22.24-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.16 1.71 2.6 4.14 3.65.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.15.2-.57.2-1.05.14-1.15-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.95-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.35-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.29.36-.43.12-.14.16-.24.24-.4.08-.16.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.83-.2-.48-.4-.42-.55-.42h-.01z"/></svg>
+          Join your class WhatsApp group
+        </a>
+
+        <button class="new-search" id="newSearchBtn">Look up another number</button>
+      </div>
+    </div>
+
+    <footer>Student directory · scan-to-lookup · <strong>@SOIS</strong></footer>
+  </div>
+
+<script>
+  const STUDENTS = {"PU/MCA/26/151250": {"name": "AMAL KURIAN TOMY", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/153432": {"name": "Chetan C Poojari", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/160471": {"name": "Monitha P", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/139580": {"name": "Mangal Dharmendra Pandey", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/174036": {"name": "Muhammad Eshaan M", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/174551": {"name": "Abhishek M", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/175971": {"name": "Muhammad Pattilath", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/176382": {"name": "Basil M B", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/176384": {"name": "Thomas Mathew", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/176455": {"name": "Akarsh S M", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/176230": {"name": "Arpan Sankesh", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/179362": {"name": "Sandepagu Rajeswari", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/178667": {"name": "Moulya H M", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/179348": {"name": "Aasadi Divya Sree", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/182166": {"name": "Naveen C", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/181867": {"name": "Navya Madhu", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/179258": {"name": "DAYYALA NIHARIKA", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/184128": {"name": "Diya Mansi A P", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/176366": {"name": "SOURAV sudhakar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/183586": {"name": "Sonalika Xalxo", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/185372": {"name": "Mandhapalli Reddy Eswar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/184677": {"name": "Deepak G", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/183550": {"name": "DANDU SHAIK AFREEN SULTHANA", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/186815": {"name": "AMAL KRISHNA P S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/187149": {"name": "Saiyad Amir Hamza", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/182230": {"name": "Sanket Gajanan Kolambkar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/188839": {"name": "Harsh Hemant Parulekar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/186839": {"name": "ALFRED VARGHESE", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/187480": {"name": "Premi Maurya", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/188762": {"name": "Jithin Gowda N P", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/188945": {"name": "Nikhita S Mutugar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/189693": {"name": "Abhinav C G", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/190053": {"name": "Deekshitha .", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/190114": {"name": "ABHIJITH M P", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/188663": {"name": "Preethi", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/189936": {"name": "YADAV P S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/190188": {"name": "Soumyaranjan Nayak", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/192591": {"name": "BHARATH A PAWAR", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/192631": {"name": "Ajay Saw", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/193010": {"name": "Amrutha G Y", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/195414": {"name": "TEJAS S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/196038": {"name": "Rajesh J", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Machine Learning)", "school": "SOIS", "section": "1MCA01", "room": "MT01", "whatsapp": "https://chat.whatsapp.com/BymN3hyjB8D2qO4G29BXjp"}, "PU/MCA/26/138011": {"name": "ASHMITHA MARATHE", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/138007": {"name": "ABHISHEK KASHINATH MADAR", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/142709": {"name": "Gokula S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/138403": {"name": "Pratham Jain", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/147062": {"name": "Abhishek Kumar", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/148844": {"name": "Rakshitha P", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/156126": {"name": "Sneha Jose", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/160763": {"name": "Ananya Singh", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/152529": {"name": "SANJANA N MALKHED", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/166409": {"name": "Sachin H D", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/165666": {"name": "Zishan Tanveer Shaikh", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/166422": {"name": "Abhishek S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/178622": {"name": "Amrutha S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/174240": {"name": "Upendra Kumar Yadav", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/177456": {"name": "Manjunath Anant Boragoud", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/178189": {"name": "Shiv Shankar Parida", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/187808": {"name": "Sameera Siddiqua", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/188860": {"name": "Mohammed Sufiyan", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/190034": {"name": "M.Harsh .", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/189064": {"name": "Muhammed Ajmal N", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/190160": {"name": "Thripuja S", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/195709": {"name": "Ansh .", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/196616": {"name": "ashish gupta", "course": "MCA", "program": "MCA (Specialization in Artificial Intelligence & Data Science)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/138780": {"name": "Ishan Sanyal", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/139247": {"name": "Santanu Dutta", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/150287": {"name": "Gautham Raj R", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/148827": {"name": "Dhavana B M", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/156567": {"name": "Vignesh D", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/141339": {"name": "Nitin Kumar", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/141650": {"name": "Alok Kumar", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/166487": {"name": "MEGHANA DR", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/167195": {"name": "Gheevas L GEORGE", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/177283": {"name": "ATHITH K S", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/177867": {"name": "V Ananthakrishnan", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/177668": {"name": "Alakananda K", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/178008": {"name": "A G Nanda Gopan", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/176562": {"name": "Mohammed Saahir Khan Zain", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/183021": {"name": "ANJU LALWANI", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/182188": {"name": "Nikhil Tiwari", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/181297": {"name": "Patan Ashif Ekbaal", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/184569": {"name": "Sankit Kumar", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/188344": {"name": "Abijith S", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/142403": {"name": "DHANUSH KUMAR P", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/192858": {"name": "Anjali C", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/156548": {"name": "lavanya s", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/194598": {"name": "Piyush Tyagi", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/197705": {"name": "Mahendra A", "course": "MCA", "program": "MCA (Specialization in Cyber Security)", "school": "SOIS", "section": "1MCA02", "room": "MT02", "whatsapp": "https://chat.whatsapp.com/CePWfYBT6yp6OtGrdTouur"}, "PU/MCA/26/174940": {"name": "Rajat Vishweshwar Hegade", "course": "MCA", "program": "MCA (Specialization in Quantum Computing)", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/150433": {"name": "Shivam Anand", "course": "MCA", "program": "MCA (Specialization in Big Data, Internet of Things & Cloud Computing)", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/162335": {"name": "Adwaith KM", "course": "MCA", "program": "MCA (Specialization in Big Data, Internet of Things & Cloud Computing)", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/172257": {"name": "Visweswar Sandrapalli", "course": "MCA", "program": "MCA (Specialization in Big Data, Internet of Things & Cloud Computing)", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/142669": {"name": "Goutam Tukaram Naik", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/137510": {"name": "Nasir Maqbool Mir", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/137867": {"name": "BIDISHA MONDAL", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/152897": {"name": "Dwip Roy", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/172486": {"name": "S SUMIYA", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/172007": {"name": "Harikrishnan R", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/173776": {"name": "Arka Kanjilal", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/176727": {"name": "Banupriya D", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/180336": {"name": "Tyarappagari Richa Priya", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/176709": {"name": "Thilak G M", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/177675": {"name": "Simran", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/184167": {"name": "Manoj Kumar M", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/183502": {"name": "Satyam Kumar Rai", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/187594": {"name": "Mohammed Al Maaz Ahamed", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/181447": {"name": "Bhaskar Gupta", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/193084": {"name": "Amruth T G", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/189818": {"name": "felix Darwin D", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/MCA/26/195429": {"name": "C Dhanush", "course": "MCA", "program": "MCA", "school": "SOIS", "section": "1MCA03", "room": "MT04", "whatsapp": "https://chat.whatsapp.com/E6gqTtAUjZK8foL8fXEp0m"}, "PU/M.SC/SOIS/26/151419": {"name": "V HARISH", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/164256": {"name": "VIVEK. P", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/176535": {"name": "Sreenandana K K", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/179268": {"name": "Deeksha B S", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/180156": {"name": "SHIVANANDA K P", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/180137": {"name": "AADRISHYA N", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/181719": {"name": "Keerthana M P", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/180028": {"name": "ALKA K", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/175282": {"name": "Chandana R G", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/182138": {"name": "Keeravani Nagaraju", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/175341": {"name": "Manjushree S N", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/185752": {"name": "Kavitha Y B", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/170883": {"name": "Muhammed Yaseen T", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/187394": {"name": "Binoj Lal B", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/187403": {"name": "ABHISHEK D", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/193875": {"name": "BILAL JABBAR", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}, "PU/M.SC/SOIS/26/197132": {"name": "Syasam Sai Harshitha", "course": "M.Sc", "program": "M.Sc Data Science", "school": "SOIS", "section": "1MSDS01", "room": "MT08", "whatsapp": "https://chat.whatsapp.com/Gs50qrkR4el1J5NZ89Cyb1"}};
+
+  const regInput = document.getElementById('regInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const formPanel = document.getElementById('formPanel');
+  const resultPanel = document.getElementById('resultPanel');
+  const tearDivider = document.getElementById('tearDivider');
+  const newSearchBtn = document.getElementById('newSearchBtn');
+
+  function normalize(s){
+    return (s || '').trim().toUpperCase();
+  }
+
+  function showResult(data){
+    document.getElementById('rName').textContent = data.name;
+    document.getElementById('rProgram').textContent = data.school + ' · ' + data.course;
+    document.getElementById('rCourse').textContent = data.course || '—';
+    document.getElementById('rProgramFull').textContent = data.program || '—';
+    document.getElementById('rSchool').textContent = data.school || '—';
+    document.getElementById('rSection').textContent = data.section || '—';
+    document.getElementById('rRoom').textContent = data.room || '—';
+    const waBtn = document.getElementById('rWhatsapp');
+    if(data.whatsapp){
+      waBtn.href = data.whatsapp;
+      waBtn.style.display = 'flex';
+    } else {
+      waBtn.style.display = 'none';
+    }
+
+    formPanel.classList.add('hidden-after');
+    tearDivider.style.display = 'block';
+    resultPanel.classList.add('visible');
+    errorMsg.style.display = 'none';
+  }
+
+  function handleSubmit(){
+    const key = normalize(regInput.value);
+    if(!key){
+      errorMsg.textContent = 'Please enter your registration number.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+    const match = STUDENTS[key];
+    if(match){
+      showResult(match);
+    } else {
+      errorMsg.textContent = "We couldn't find that registration number. Double-check it and try again.";
+      errorMsg.style.display = 'block';
+    }
+  }
+
+  submitBtn.addEventListener('click', handleSubmit);
+  regInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') handleSubmit(); });
+
+  newSearchBtn.addEventListener('click', () => {
+    formPanel.classList.remove('hidden-after');
+    tearDivider.style.display = 'none';
+    resultPanel.classList.remove('visible');
+    regInput.value = '';
+    regInput.focus();
+    errorMsg.style.display = 'none';
+  });
+</script>
+</body>
+</html>
